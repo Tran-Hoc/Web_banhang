@@ -1,0 +1,157 @@
+﻿@model IEnumerable<Web_banhang.Models.VMNews>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Danh sách tin tức";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+}
+@section leftnavbar{
+    <li class="nav-item d-none d-sm-inline-block">
+        <a href="#" class="nav-link">@ViewData["Title"]</a>
+    </li>
+}
+@section pageHeader{
+    <li class="breadcrumb-item active">@ViewData["Title"]</li>
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body table-responsive p-0">
+                    <table class="table table-hover text-nowrap">
+                        <thead>
+                            <tr>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Id)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Title)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.CreatedDate)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Image)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.IsActive)
+                                </th>
+                                <th class="float-right"><a asp-action="Create" class="btn btn-primary">Thêm mới</a></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null && Model.Any())
+                            {
+                                @foreach (var item in Model)
+                                {
+                                    var strCheck = item.IsActive ? "<i class='fa fa-check text-success'></i>" : "<i class='fas fa-times text-danger'></i>";
+                                    <tr id="row_@item.Id">
+                                        <td><input type="checkbox" class="cbkItem" value="@item.Id" /></td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Id)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Title)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.CreatedDate)
+                                        </td>
+                                        <td>
+                                            @*@Html.DisplayFor(modelItem => item.FileImage)*@
+                                            <picture>
+
+                                                <img width="100"  src=@Url.Content(item.Image) alt="Hình ảnh">
+                                            </picture>
+                                        </td>
+                                        <td class="text-center">  
+                                            <a href="#"  data-id="@item.Id" class="btnActive"> @Html.Raw(strCheck)</a>
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-info" asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                                            @*<a asp-action="Details" asp-route-id="@item.Id">Details</a> |*@
+                                            <a class="btn btn-danger btnDelete" data-id="@item.Id">Delete</a>
+                                        </td>
+                                    </tr>
+
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4">Không có bản ghi nào!</td>
+                                </tr>
+
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+@Html.AntiForgeryToken()
+
+@section script{
+    <script>
+        $(document).ready(function () {
+            $('body').on('click', '.btnDelete', function () {
+                var id = $(this).data("id");
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                var conf = confirm("Bạn có muốn xoá bản ghi này không?");
+                if (conf == true) {
+                    $.ajax({
+                        url: "/Admin/News/Delete/",
+                        type: "post",
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader("XFRS-TOKEN", $('input:hidden[name="_RequestVerificationToken"]').val());
+                        },
+                        data: {
+                            __RequestVerificationToken: token,
+                            id: id
+                        },
+                        success: function (rs) {
+                            if (rs.success) {
+                                $('#row_' + id).remove();
+                            }
+                            else {
+                                alert("Không thành công!");
+                            }
+                        },
+                        error: function (xhr) {
+                            alert("Không thành công!");
+                        }
+
+                    })
+                }
+            })
+        })
+        $('body').on('click', btnActive), function(e){
+            e.preventDefault();
+            var btn = $(this);
+            var id = btn.data("id");
+            $.ajax({
+                url: "/Admin/News/IsActive/",
+                type: "post",
+                data: {id:id},
+                success: function(rs) {
+                    if(rs.success){
+                        if(rs.isActive){
+                            btn.html("<i class='fs fs-check text-success'></i>");
+
+                        }
+                        else{
+                            btn.html("<i class='fs fs-times text-danger'></i>");
+
+                        }
+                    }
+                }
+            })
+        }
+
+    </script>
+}

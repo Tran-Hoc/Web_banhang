@@ -1,0 +1,134 @@
+﻿@{
+    ViewData["Title"] = "Quản lý tài nguyên";
+    ViewData["parent"] = "";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+}
+@section leftnavbar{
+
+    <li class="nav-item d-none d-sm-inline-block">
+        <a href="" class="nav-link"> @ViewData["parent"]</a>
+    </li>
+    <li class="nav-item d-none d-sm-inline-block">
+        <a href="#" class="nav-link">@ViewData["Title"]</a>
+    </li>
+}
+@section pageHeader{
+    <li class="breadcrumb-item active">@ViewData["Title"]</li>
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body table-responsive p-0">
+                  @*  <div id="elfinder">
+                    </div>*@
+                    <button id="editor">Editor</button>
+                    <input type="text" id="fileurl" />
+
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" id="editor">
+                        Launch demo modal
+                    </button>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div id="elfinder">
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary">Save changes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section script{
+
+    <link href="~/lib/elfinder/css/elfinder.full.css" rel="stylesheet" />
+    <link href="~/lib/elfinder/css/theme.min.css" rel="stylesheet" />
+
+    <link href="~/lib/jqueryui/themes/base/jquery-ui.css" rel="stylesheet" />
+    <link href="~/lib/jqueryui/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/lib/jqueryui/themes/base/theme.css" rel="stylesheet" />
+    <link href="~/lib/jqueryui/themes/base/theme.min.css" rel="stylesheet" />
+
+    <script src="~/lib/jqueryui/jquery-ui.js"></script>
+    <script src="~/lib/jqueryui/jquery-ui.min.js"></script>
+
+    <script src="~/lib/elfinder/js/elfinder.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#editor").click(function (e) {
+                var elfinder = $('#elfinder').elfinder({
+                    url: '/el-finder-file-system/connector',
+                    baseUrl: "/lib/elfinder/",
+                    resizable: false,
+                    getfile: {
+                        onlyURL: true,
+                        multiple: false,
+                        folders: false,
+                        oncomplete: ''
+                    },
+                    handlers: {
+                        dblclick: function (event, elfinderInstance) {
+                            fileInfo = elfinderInstance.file(event.data.file);
+
+                            if (fileInfo.mime != 'directory') {
+                                $("#fileurl").val(elfinderInstance.url(event.data.file));
+                                elfinderInstance.destroy();
+                                $('#elfinder').dialog('close');
+                                return false; // stop elfinder
+                            }
+                        },
+                        destroy: function (event, elfinderInstance) {
+                            elfinder.dialog('close');
+
+                        }
+                    }
+                }).dialog({
+                    title: 'file manager',
+                    resizable: true,
+                    width: 920,
+                    height: 500
+                });
+            });
+        });
+        $('#elfinder').elfinder({
+            // set your elFinder options here
+            customData: {
+                _token: '<?= csrf_token() ?>'
+            },
+            url: '/el-finder-file-system/connector',  // connector URL
+            dialog: {width: 900, modal: true, title: 'Select a file'},
+            resizable: false,
+            commandsOptions: {
+                getfile: {
+                    oncomplete: 'destroy',
+                    folders  : true
+                }
+            },
+            getFileCallback: function (file) {
+                window.parent.processSelectedFile(file.path, '<?= $input_id?>');
+                parent.jQuery.colorbox.close();
+            }
+        }).elfinder('instance');
+    </script>
+}
