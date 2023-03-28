@@ -1,4 +1,4 @@
-﻿@model Web_banhang.Models.VMNews;
+﻿@model Web_banhang.Models.NewsVM;
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 @{
@@ -21,14 +21,14 @@
     <li class="breadcrumb-item active">@ViewData["Title"]</li>
 }
 
-
 <section class="content">
     <div class="container-fluid">
         <div class="col-12">
             <div class="card">
                 <div class="card card-primary">
-                    <form asp-action="Create" method="post" enctype="multipart/form-data">
+                    <form asp-action="Edit" method="post" enctype="multipart/form-data">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                       @Html.HiddenFor(x=> x.Id)
                         <div class="card-body">
                             <div class="form-group">
                                 <label asp-for="Title" class="control-label"></label>
@@ -42,17 +42,19 @@
                             </div>
                             <div class="form-group">
                                 <label asp-for="Image" class="control-label"></label>
-                                <div class="custom-file">
-                                    <input asp-for="Image" class="form-control" id="txtImage">
-                                    <div class="input-group-append">
-                                        <input type="button" value="Tải ảnh" onclick="BrowseServer('txtImage');" />
+                                <div class="input-group">
+                                    <div class="custom-file">
+                                        <input asp-for="Image" class="form-control" id="txtImage" style="cursor:pointer;" onclick="BrowseServer('txtImage');" >
+                                        <div class="input-group-append">
+                                            <input type="button" value="Tải ảnh" class="form-control" onclick="BrowseServer('txtImage');" />
+                                        </div>
                                     </div>
                                 </div>
                                 <span asp-validation-for="Image" class="text-danger"></span>
                             </div>
                             <div class="form-group">
                                 <label asp-for="Detail" class="control-label"></label>
-                                <textarea asp-for="Detail" id="summernote"></textarea>
+                                <textarea asp-for="Detail"></textarea>
                                 <span asp-validation-for="Detail" class="text-danger"></span>
                             </div>
                             <div class="form-group">
@@ -71,7 +73,14 @@
                                 <span asp-validation-for="SeoKeywords" class="text-danger"></span>
                             </div>
                             <div class="form-group">
-                                <input type="submit" value="Create" class="btn btn-primary" />
+                                <div class="custom-control custom-checkbox">
+                                    <input asp-for="IsActive" class="custom-control-input" type="checkbox">
+                                    <label asp-for="IsActive" class="custom-control-label"></label>
+                                    <span asp-validation-for="SeoKeywords" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <input type="submit" value="Cập nhật" class="btn btn-primary" />
                             </div>
                         </div>
                     </form>
@@ -82,7 +91,7 @@
 </section>
 
 @section script{
-    <!-- Summernote -->
+     <!-- Summernote -->
     <script src="~/client/plugins/summernote/summernote-bs4.min.js"></script>
     <script src="~/client/plugins/summernote/summernote-bs4.js"></script>
 
@@ -100,22 +109,10 @@
 
     <script src="~/lib/elfinder/js/elfinder.min.js"></script>
 
+    @await Html.PartialAsync("~/Areas/Admin/Views/Shared/_SummerNote.cshtml", new {height = 200, selector = "#Detail"})
+
     <script>
 
-        $(function () {
-
-            bsCustomFileInput.init();
-            // Summernote
-            //$('#summernote').summernote();
-            var detail = '@Model.Detail';
-            //$('#summernote').summernote('code', detail);
-            $('#summernote').summernote('pasteHTML','');
-            $('#summernote').summernote({
-                placeholder: 'Chi tiết',
-                //tabsize: 2,
-                height: 200
-            });
-        });
         function BrowseServer(field) {
             var fm = $('<div/>').dialogelfinder({
                 url: '/el-finder-file-system/connector', // change with the url of your connector

@@ -29,11 +29,10 @@
 </form>
 <button id="elfinder_button">Elfinder button</button>
 <div id="elfinder_content">
-
 </div>
 
 @section script{
-    @await Html.PartialAsync("Summernote", new {height = 200, selector = "#Content"})
+    @*@await Html.PartialAsync("Summernote", new {height = 200, selector = "#Content"})*@
 
     <link href="~/lib/elfinder/css/elfinder.full.css" rel="stylesheet" />
     <link href="~/lib/elfinder/css/theme.min.css" rel="stylesheet" />
@@ -47,6 +46,8 @@
     <script src="~/lib/jqueryui/jquery-ui.min.js"></script>
 
     <script src="~/lib/elfinder/js/elfinder.min.js"></script>
+    @*@await Html.PartialAsync("~/Areas/Admin/Views/Shared/_SummerNote.cshtml", new {height = 200, selector = "#Detail"})*@
+
     <script type="text/javascript">
         // Documentation for client options:
         // https://github.com/Studio-42/elFinder/wiki/Client-configuration-options
@@ -89,27 +90,105 @@
             //};
             //$('#elfinder').elfinder(options).elfinder('instance');
 
+            (function (factory) {
+                if (typeof define === 'function' && define.amd) {
+                    define(['jquery'], factory);
+                }
+                else if (typeof module === 'object' && module.exports) {
+                    module.exports = factory(require('jquery'));
+                } else {
+                    factory(window.jQuery);
+                }
+            }
+            (function ($) {
+                $.extend($.summernote.plugins, {
+                    // Tạo plugin tên elfinder
+                    'elfinder': function (context) {
+                        var self = this;
+                        // ui has renders to build ui elements.
+                        var ui = $.summernote.ui;
+                        // Tạo nút bấm
+                        context.memo('button.elfinder', function () {
+                            var button = ui.button({
+                                contents: '<i class="note-icon-picture"/> elFinder',
+                                tooltip: 'Quản lý file',
+                                click: function () {
+                                    // Bấm vào nút bấm gọi hàm elfinderDialog
+                                    elfinderDialog(context);
+                                }
+                            });
+                            // create jQuery object from button instance.
+                            var $elfinder = button.render();
+                            return $elfinder;
+                        });
+                        // This methods will be called when editor is destroyed by $('..').summernote('destroy');
+                        // You should remove elements on `initialize`.
+                        this.destroy = function () {
+                            this.$panel.remove();
+                            this.$panel = null;
+                        };
+                    }
 
-            //function elfinderDialog(editor) {
-            //    var fm = $('<div/>').dialogelfinder({
-            //        url: '/el-finder-file-system/connector', // change with the url of your connector
-            //        baseUrl: "/lib/elfinder/",
-            //        lang: 'vi',
-            //        width: 840,
-            //        height: 450,
-            //        destroyOnClose: true,
-            //        getFileCallback: function (files, fm) {
-            //            console.log(files);
-            //            editor.invoke('editor.insertImage', files.url);
-            //        },
-            //        commandsOptions: {
-            //            getfile: {
-            //                oncomplete: 'close',
-            //                folders: false
-            //            }
-            //        }
-            //    }).dialogelfinder('instance');
-            //}
+                });
+            }));
+            function elfinderDialog(editor) {
+                var fm = $('<div/>').dialogelfinder({
+                    url: '/el-finder-file-system/connector', // change with the url of your connector
+                    baseUrl: "/lib/elfinder/",
+                    lang: 'vi',
+                    width: 840,
+                    height: 450,
+                    destroyOnClose: true,
+                    getFileCallback: function (files, fm) {
+                        console.log(files);
+                        editor.invoke('editor.insertImage', files.url);
+                    },
+                    commandsOptions: {
+                        getfile: {
+                            oncomplete: 'close',
+                            folders: false
+                        }
+                    }
+                }).dialogelfinder('instance');
+            }
+
+            $(document).ready(function () {
+                $('#Content').summernote({
+                    height: 200,
+                    toolbar: [
+                        // [groupName, [list of button]]
+                        ['style', ['style']],
+                        ['font', ['bold', 'underline', 'clear']],
+                        ['fontname', ['fontname']],
+                        ['color', ['color']],
+                        ['para', ['ul', 'ol', 'paragraph']],
+                        ['table', ['table']],
+                        ['insert', ['link', 'picture', 'video', 'elfinder']],
+                        ['view', ['fullscreen', 'codeview', 'help']],
+                    ],
+                });
+            });
+
+            function elfinderDialog(editor) {
+                var fm = $('<div/>').dialogelfinder({
+                    url: '/el-finder-file-system/connector', // change with the url of your connector
+                    baseUrl: "/lib/elfinder/",
+                    lang: 'vi',
+                    width: 840,
+                    height: 450,
+                    destroyOnClose: true,
+                    getFileCallback: function (files, fm) {
+                        console.log(files);
+                        editor.invoke('editor.insertImage', files.url);
+                    },
+                    commandsOptions: {
+                        getfile: {
+                            oncomplete: 'close',
+                            folders: false
+                        }
+                    }
+                }).dialogelfinder('instance');
+            }
 
             $('#elfinder_button').click(function () {
                 //alert("The button was clicked.");
@@ -121,16 +200,16 @@
                     height: 450,
                     destroyOnClose: true,
                     getFileCallback: function (files) {
-                       
+
                         console.log(files);
-                       // debugger;
-                       //console.log($('#editor').closest('.elfinder-input'));
+                        // debugger;
+                        //console.log($('#editor').closest('.elfinder-input'));
                         console.log(files.url);
                         //editor.invoke('editor.insertImage', files.url);
-                        var content = '<div id="elfinder_content"><strong>'+ files.name +'</strong></div>';
+                        var content = '<div id="elfinder_content"><strong>' + files.name + '</strong></div>';
                         $('#elfinder_content').replaceWith(content);
                     },
-                    
+
                     commandsOptions: {
                         getfile: {
                             oncomplete: 'close',

@@ -1,0 +1,344 @@
+﻿@using X.PagedList.Mvc.Core;
+@model X.PagedList.IPagedList<Web_banhang.Models.ProductVM>
+
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Danh sách sản phẩm";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+}
+@section leftnavbar{
+    <li class="nav-item d-none d-sm-inline-block">
+        <a href="#" class="nav-link">@ViewData["Title"]</a>
+    </li>
+}
+@section pageHeader{
+    <li class="breadcrumb-item active">@ViewData["Title"]</li>
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">@ViewData["Title"]</h3> <div class="row">
+                    </div>
+                    <div class="float-right card-tools">
+                        <a asp-action="Create" class="btn btn-primary">Thêm mới</a>
+                        <a href="#" id="DeleteAll" class="btn btn-danger">Xoá</a>
+                    </div>
+                </div>
+                <div class="card-body table-responsive p-0">
+                   @* <div class="row">
+                        <div class="col-md-6">
+                        </div>
+                        <div class="col-md-5">
+                            <form asp-action="Index" asp-controller="Product" method="post">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                <div class="input-group mb-3">
+                                    <p>
+                                        <div class="input-group-prepend">
+                                        </div>
+                                        <input name="searchstring" value="@ViewBag.searchstring" type="text" class="form-control">
+                                        <input type="submit" value="Tìm kiếm" class="btn btn-success" />
+                                    </p>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>*@
+                    <table class="table table-striped text-wrap">
+                        <thead>
+                            <tr>
+                                <th> <input type="checkbox" id="SelectAll" /></th>
+
+                                <th>Tên sản phẩm</th>
+                                <th>Hình ảnh</th>
+                                <th>Giá</th>
+                                <th>Số lượng</th>
+                                <th>Home</th>
+                                <th>Sale</th>
+                                <th>Hiển thị</th>
+                                <th class="container col-2"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null && Model.Any())
+                            {
+                                @foreach (var item in Model)
+                                {
+                                    var strCheck = item.IsActive ? "<i class='fa fa-check text-success'></i>" : "<i class='fas fa-times text-danger'> </i>";
+                                    var strCheckHome = item.IsHome ? "<i class='fa fa-check text-success'></i>" : "<i class='fas fa-times text-danger'></i>";
+                                    var strCheckSale = item.IsSale ? "<i class='fa fa-check text-success'></i>" : "<i class='fas fa-times text-danger'></i>";
+
+                                    <tr id="row_@item.Id">
+                                        <td>
+                                            <input type="checkbox" class="cbkItem" value="@item.Id" />
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Title)
+                                        </td>
+                                        <td>
+                                            @*@Html.DisplayFor(modelItem => item.Image)*@
+                                            <picture>
+                                                <img width="100" src='@Url.Content(item.Image)' alt="Hình ảnh">
+                                            </picture>
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Price)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Quantity)
+                                        </td>
+                                        <td class="text-center">
+                                            <a href='#' data-id="@item.Id" class="btnHome">@Html.Raw(strCheckHome)</a>
+                                        </td>
+                                        <td class="text-center">
+                                            <a href='#' data-id="@item.Id" class="btnSale">@Html.Raw(strCheckSale)</a>
+                                        </td>
+                                        <td class="text-center">
+                                            <a href='#' data-id="@item.Id" class="btnActive">@Html.Raw(strCheck)</a>
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-info" asp-action="Edit" asp-route-id="@item.Id">Sửa</a>
+                                            @*<a asp-action="Details" asp-route-id="@item.Id">Details</a> |*@
+                                            <a class="btn btn-danger btnDelete" data-id="@item.Id">Xoá</a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4">Không có bản ghi nào!</td>
+                                </tr>
+
+                            }
+                        </tbody>
+                    </table>
+                    <!-- Thêm mã phân trang -->
+                    <div class="row">
+                        @* <div class="col-sm-12 col-md-5">
+                        <div style="text-align: center">
+                        Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) / @Model.PageCount
+
+                        </div>
+                        <div class="dataTables_info" id="example2_info" role="status" aria-live="polite">Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) / @Model.PageCount</div>
+                        </div>*@
+                        <div class="col-6"></div>
+                        <div class="col-5" style="text-align:right;">
+                            @Html.PagedListPager(Model, page => Url.Action("Index", new { page , searchstring = ViewBag.searchstring}))
+                        </div>
+                        <div class="col-1"></div>
+
+                    </div>
+                    <!-- Kết thúc -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+
+@Html.AntiForgeryToken()
+@section script{
+    <script>
+        $(document).ready(function () {
+            $('body').on('click', '.btnDelete', function () {
+                var id = $(this).data("id");
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                var conf = confirm("Bạn có muốn xoá bản ghi này không?");
+                if (conf == true) {
+                    $.ajax({
+                        url: "/Admin/Product/Delete/",
+                        type: "post",
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader("XFRS-TOKEN", $('input:hidden[name="_RequestVerificationToken"]').val());
+                        },
+                        data: {
+                            __RequestVerificationToken: token,
+                            id: id
+                        },
+                        success: function (rs) {
+                            if (rs.success) {
+                                $('#row_' + id).remove();
+                            }
+                            else {
+                                alert("Không thành công!");
+                            }
+                        },
+                        error: function (xhr) {
+                            alert(" err Không thành công!");
+                        }
+
+                    })
+                }
+            });
+
+            $('body').on('click', '.btnActive', function (e) {
+
+                e.preventDefault();
+                var btn = $(this);
+                var id = $(this).data("id");
+
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                $.ajax({
+                    url: "/Admin/Product/IsActive/",
+                    type: "post",
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("XFRS-TOKEN", $('input:hidden[name="_RequestVerificationToken"]').val());
+                    },
+                    data: {
+                        __RequestVerificationToken: token,
+                        id: id
+                    },
+                    success: function (rs) {
+                  
+                        if (rs.success) {
+                            if (rs.isActive == true) {
+                                btn.html("<i class='fa fa-check text-success'/>");
+                            }
+                            else if (rs.isActive == false) {
+                                btn.html("<i class='fas fa-times text-danger'> </i>");
+                            }
+                        }
+                    }
+                });
+            });
+
+            $('body').on('click', '.btnHome', function (e) {
+                e.preventDefault();
+                var btn = $(this);
+                var id = btn.data("id");
+
+                var token = $('input[name="__RequestVerificationToken"]').val();
+
+                $.ajax({
+                    url: '/Admin/Product/IsHome/',
+                    type: 'POST',
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("XFRS-TOKEN", $('input:hidden[name="_RequestVerificationToken"]').val());
+                    },
+                    data: {
+                        __RequestVerificationToken: token,
+                        id: id
+                    },
+                    success: function (rs) {
+                        if (rs.success) {
+                            if (rs.success) {
+                                if (rs.isActive == true) {
+                                    btn.html("<i class='fa fa-check text-success'/>");
+                                }
+                                else if (rs.isActive == false) {
+                                    btn.html("<i class='fas fa-times text-danger'> </i>");
+                                }
+                            }
+                        }
+
+                    }
+                });
+            });
+
+            $('body').on('click', '.btnSale', function (e) {
+                e.preventDefault();
+                var btn = $(this);
+                var id = btn.data("id");
+
+                var token = $('input[name="__RequestVerificationToken"]').val();
+
+                $.ajax({
+                    url: '/Admin/Product/IsSale/',
+                    type: 'POST',
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("XFRS-TOKEN", $('input:hidden[name="_RequestVerificationToken"]').val());
+                    },
+                    data: {
+                        __RequestVerificationToken: token,
+                        id: id
+                    },
+                    success: function (rs) {
+                        if (rs.success) {
+                            if (rs.isActive == true) {
+                                btn.html("<i class='fa fa-check text-success'/>");
+                            }
+                            else if (rs.isActive == false) {
+                                btn.html("<i class='fas fa-times text-danger'> </i>");
+                            }
+                        }
+                    }
+                });
+            });
+
+            $('body').on('change', '#SelectAll', function (e) {
+                e.preventDefault();
+                var checked = $('#SelectAll').is(':checked');
+                var checkbox = $(this).parents('.card-body').find('tr td input:checkbox');
+
+                checkbox.each(function () {
+
+                    var ids = $(this).val();
+
+                    if (!checked) {
+                        $(".cbkItem").prop('checked', false);
+                    }
+                    else {
+                        $(".cbkItem").prop('checked', true);
+                    }
+                });
+
+            });
+
+            $('body').on('click', '#DeleteAll', function (e) {
+                e.preventDefault();
+                var checkbox = $(this).parents('.card').find('tr td input:checkbox');
+                var strList = "";
+                checkbox.each(function () {
+                    if (this.checked) {
+                        var ids = $(this).val();
+                        strList += ids + ",";
+                    }
+                });
+                strList = strList.substring(0, strList.length - 1);
+
+                if (strList.length > 0) {
+                    var conf = confirm('Bạn có muốn xóa các bản ghi này hay không?');
+                    if (conf === true) {
+                        var token = $('input[name="__RequestVerificationToken"]').val();
+                        $.ajax({
+                            url: "/Admin/Product/DeleteAll/",
+                            type: "post",
+                            beforeSend: function (xhr) {
+                                xhr.setRequestHeader("XFRS-TOKEN", $('input:hidden[name="_RequestVerificationToken"]').val());
+                            },
+                            data: {
+                                __RequestVerificationToken: token,
+                                ids: strList
+                            },
+                            success: function (rs) {
+                                //console.log(rs);
+                                if (rs.success) {
+                                    checkbox.each(function () {
+                                        //console.log(ids);
+                                        if (this.checked) {
+                                            var ids = $(this).val();
+                                            $('#row_' + ids).remove();
+                                        }
+                                    });
+                                }
+                                else {
+                                    alert("Không thành công!");
+                                }
+                            },
+                            error: function (xhr) {
+                                alert("Không thành công!");
+                            }
+                        });
+                    }
+                }
+            });
+        });
+
+    </script>
+}

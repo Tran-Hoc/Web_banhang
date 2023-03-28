@@ -5,7 +5,7 @@ using Web_banhang.Models;
 
 namespace Web_banhang.Service
 {
-    public class NewsRepository : INewsRepository<VMNews>
+    public class NewsRepository : IRepository<NewsVM>
     {
         WebBanHangContext _context;
 
@@ -14,22 +14,21 @@ namespace Web_banhang.Service
             _context = context;
         }
 
-       
-
-        public async Task<List<VMNews>> GetAll()
+        public async Task<List<NewsVM>> GetAllAsync()
         {
-            var listNews = await _context.TbNews.ToListAsync();
+            var listNews = await _context.TbNews.OrderByDescending(x => x.Id).ToListAsync();
 
-            List<VMNews> result = new List<VMNews>();
+            List<NewsVM> result = new List<NewsVM>();
 
             foreach (var item in listNews)
             {
-                VMNews vMNews = new VMNews
+                NewsVM vMNews = new NewsVM
                 {
                     Id = item.Id,
                     Title = item.Title,
                     Image = "~/files/Image/" + item.Image,
                     CreatedDate = item.CreatedDate,
+                    IsActive = item.IsActive,
                 };
                 result.Add(vMNews);
             }
@@ -37,7 +36,71 @@ namespace Web_banhang.Service
             return result;
         }
 
-        public async Task<VMNews> GetById(int? id)
+        public Task<List<NewsVM>> GetPageListAsync(int? page)
+        {
+            //var listNews = await _context.TbNews.ToListAsync();
+
+            //List<NewsVM> result = new List<NewsVM>();
+
+            //if (page == null) page = 1;
+            //var links = (from l in _context.TbNews
+            //             select l).OrderBy(x => x.Id);
+            //int pagesize = 5;
+            //int pageNumber = (page ?? 1);
+
+            ////return View(links.ToPagedList(pageNumber, pagesize));
+
+            //foreach (var item in listNews)
+            //{
+            //    NewsVM vMNews = new NewsVM
+            //    {
+            //        Id = item.Id,
+            //        Title = item.Title,
+            //        Image = "~/files/Image/" + item.Image,
+            //        CreatedDate = item.CreatedDate,
+            //        IsActive = item.IsActive,
+            //    };
+            //    result.Add(vMNews);
+            //}
+
+            //return result;
+            throw new NotImplementedException();
+        }
+
+        public async Task<List<NewsVM>> GetSearchAsync(string searchstring)
+        {
+            List<TbNews> listNews = await _context.TbNews.Where( x => x.Title.Contains(searchstring) || x.Alias.Contains(searchstring)).ToListAsync();
+            //listNews = (List<TbNews>) listNews.Where(x => x.Title.Contains(searchstring) || x.Alias.Contains(searchstring));
+
+            //List<VMNews> result = new List<VMNews>();
+
+            //if (page == null) page = 1;
+            //var links = (from l in _context.TbNews
+            //             select l).OrderBy(x => x.Id);
+            //int pagesize = 5;
+            //int pageNumber = (page ?? 1);
+
+            //return View(links.ToPagedList(pageNumber, pagesize));
+
+            List<NewsVM> result = new List<NewsVM>();
+
+            foreach (var item in listNews)
+            {
+                NewsVM vMNews = new NewsVM
+                {
+                    Id = item.Id,
+                    Title = item.Title,
+                    Image = "~/files/Image/" + item.Image,
+                    CreatedDate = item.CreatedDate,
+                    IsActive = item.IsActive,
+                };
+                result.Add(vMNews);
+            }
+
+            return result;
+        }
+
+        public async Task<NewsVM?> GetById(int? id)
         {
 
             if (id == null || _context.TbNews == null)
@@ -51,7 +114,7 @@ namespace Web_banhang.Service
             {
                 return null;
             }
-            VMNews vMNews = new VMNews
+            NewsVM vMNews = new NewsVM
             {
                 Id = news.Id,
                 Title = news.Title,
@@ -62,11 +125,12 @@ namespace Web_banhang.Service
                 SeoDescription = news.SeoDescription,
                 SeoKeywords = news.SeoKeywords,
                 SeoTitle = news.SeoTitle,
+                IsActive = news.IsActive,
             };
             return vMNews;
 
         }
-        public async Task<bool> AddAsync(VMNews t)
+        public async Task<bool> CreateAsync(NewsVM t)
         {
             if (_context.TbNews != null)
             {
@@ -82,7 +146,8 @@ namespace Web_banhang.Service
                     SeoKeywords = t.SeoKeywords,
                     CreatedDate = DateTime.Now,
                     ModifiedDate = DateTime.Now,
-                    Alias = Web_banhang.Models.Filter.FilterChar(t.Title),
+                    IsActive = t.IsActive,
+                    Alias = Filter.FilterChar(t.Title),
 
                 };
                 //= SaveFile(t.FileImage, tbNews.CreatedDate.ToString("MM-dd-yyyy-h-mm-tt"), 1);
@@ -93,14 +158,14 @@ namespace Web_banhang.Service
                     await _context.SaveChangesAsync();
                     return true;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     return false;
                 }
             }
             return false;
         }
-        public async Task<bool> Update(VMNews t)
+        public async Task<bool> UpdateAsync(NewsVM t)
         {
             if (_context.TbNews != null)
             {
@@ -117,19 +182,19 @@ namespace Web_banhang.Service
                     SeoKeywords = t.SeoKeywords,
                     CreatedDate = DateTime.Now,
                     ModifiedDate = DateTime.Now,
-                    Alias = Web_banhang.Models.Filter.FilterChar(t.Title),
+                    Alias = Filter.FilterChar(t.Title),
 
                 };
                 //= SaveFile(t.FileImage, tbNews.CreatedDate.ToString("MM-dd-yyyy-h-mm-tt"), 1);
 
                 try
                 {
-                     //_context.Entry(tbNews).State = EntityState.Modified;
-                    await _context.AddAsync(tbNews);
+                    _context.Entry(tbNews).State = EntityState.Modified;
+                    //await _context.AddAsync(tbNews);
                     await _context.SaveChangesAsync();
                     return true;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     return false;
                 }
@@ -137,19 +202,19 @@ namespace Web_banhang.Service
             return false;
         }
 
-        public bool Delete(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
             var result = _context.TbNews.Where(e => e.Id == id).FirstOrDefault();
             if (result != null)
             {
                 _context.TbNews.Remove(result);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 return true;
             }
             return false;
         }
-   
-        public Task<VMNews> UpdateById(int? id)
+
+        public Task<NewsVM> UpdateByIdAsync(int? id)
         {
             throw new NotImplementedException();
         }
@@ -160,13 +225,14 @@ namespace Web_banhang.Service
             if (item != null)
             {
                 item.IsActive = !item.IsActive;
+                _context.Entry(item).State = EntityState.Modified;
                 _context.SaveChanges();
                 return item.IsActive ? 1 : 2; // true 1 : false 2
             }
             return 0;
         }
 
-        private string SaveFile(IFormFile file, string id, int typ)
+        private string? SaveFile(IFormFile file, string id, int typ)
         {
             try
             {
@@ -201,10 +267,15 @@ namespace Web_banhang.Service
                 }
                 return fileName;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }
+        }
+
+        public Task<bool> CreateAsync(NewsVM t, List<string> LstImage)
+        {
+            throw new NotImplementedException();
         }
     }
 }

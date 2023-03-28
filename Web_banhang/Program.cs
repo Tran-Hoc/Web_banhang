@@ -6,14 +6,21 @@ using Web_banhang.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// AddAsync services to the container.
+// CreateAsync services to the container.
+
+
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<WebBanHangContext>(option => option.UseSqlServer(builder.Configuration.GetConnectionString("Conn")));
 
 builder.Services.Configure<FileSystemConfig>(builder.Configuration.GetSection(FileSystemConfig.ConfigName));
 
-builder.Services.AddScoped<INewsRepository<VMNews>, NewsRepository>();
+builder.Services.AddScoped<IRepository<NewsVM>, NewsRepository>();
+builder.Services.AddScoped<IRepository<ProdCategoryVM>, ProductCategoryRepository>();
+builder.Services.AddScoped<IProductRepository<ProductVM>, ProductRepository>();
+
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -35,6 +42,11 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "Admin",
     pattern: "{area:exists}/{controller=Categories}/{action=Index}/{id?}");
+
+app.MapControllerRoute(
+    name: "Shop",
+    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
 
 app.MapControllerRoute(
     name: "default",
