@@ -1,14 +1,13 @@
 ﻿@using X.PagedList.Mvc.Core;
-@model X.PagedList.IPagedList<Web_banhang.Models.NewsVM>
+@model X.PagedList.IPagedList<Web_banhang.Models.ProductVM>
 
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 @{
-    ViewData["Title"] = "Danh sách tin tức";
+    ViewData["Title"] = "Danh sách sản phẩm";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 
 }
-
 @section leftnavbar{
     <li class="nav-item d-none d-sm-inline-block">
         <a href="#" class="nav-link">@ViewData["Title"]</a>
@@ -35,12 +34,11 @@
                         <div class="col-md-6">
                         </div>
                         <div class="col-md-5">
-                            <form asp-action="Index" asp-controller="News" method="post">
+                            <form asp-action="Index" asp-controller="Product" method="post">
                                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                 <div class="input-group mb-3">
                                     <p>
                                         <div class="input-group-prepend">
-                                          
                                         </div>
                                         <input name="searchstring" value="@ViewBag.searchstring" type="text" class="form-control">
                                         <input type="submit" value="Tìm kiếm" class="btn btn-success" />
@@ -54,26 +52,11 @@
                         <thead>
                             <tr>
                                 <th> <input type="checkbox" id="SelectAll" /></th>
-                                <th>
-                                    @*@Html.DisplayNameFor(model => model.Id)*@
-                                    ID
-                                </th>
-                                <th class="">
-                                    @*@Html.DisplayNameFor(model => model.Title)*@
-                                    Tiêu đề
-                                </th>
-                                <th class="container col-2">
-                                    @*@Html.DisplayNameFor(model => model.CreatedDate)*@
-                                    Ngày tạo
-                                </th>
-                                <th>
-                                    @*@Html.DisplayNameFor(model => model.Image)*@
-                                    Hình ảnh
-                                </th>
-                                <th class="container col-1 text-center">
-                                    @*@Html.DisplayNameFor(model => model.IsActive)*@
-                                    Hiển thị
-                                </th>
+                                <th>Tên sản phẩm</th>
+                                <th>Hình ảnh</th>
+                                <th>Số lượng</th>
+                                <th>Giá</th>
+                                <th>Hiển thị</th>
                                 <th class="container col-2"></th>
                             </tr>
                         </thead>
@@ -83,46 +66,40 @@
                                 @foreach (var item in Model)
                                 {
                                     var strCheck = item.IsActive ? "<i class='fa fa-check text-success'></i>" : "<i class='fas fa-times text-danger'> </i>";
-                                    <tr id="row_@item.Id">
 
-                                        <td>
-                                            <input type="checkbox" class="cbkItem" value="@item.Id" />
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.Id)
-                                        </td>
+                                    <tr id="row_@item.Id">
                                         <td>
                                             @Html.DisplayFor(modelItem => item.Title)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.CreatedDate)
-                                        </td>
-                                        <td>
-                                            @*@Html.DisplayFor(modelItem => item.FileImage)*@
+                                            @*@Html.DisplayFor(modelItem => item.Image)*@
                                             <picture>
                                                 <img width="100" src='@Url.Content(item.Image)' alt="Hình ảnh">
                                             </picture>
                                         </td>
-                                        <td class="text-center">
-                                            <a href="#" data-id="@item.Id" class="btnActive"> @Html.Raw(strCheck)</a>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Price)
                                         </td>
                                         <td>
-                                            <a class="btn btn-info" asp-action="Edit" asp-route-id="@item.Id">Sửa</a>
+                                            @Html.DisplayFor(modelItem => item.Quantity)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.IsActive)
+                                        </td>
+                                        <td>
+                                            <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                                             @*<a asp-action="Details" asp-route-id="@item.Id">Details</a> |*@
-                                            <a class="btn btn-danger btnDelete" data-id="@item.Id">Xoá</a>
+                                            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                                         </td>
                                     </tr>
-
                                 }
-                            }
-                            else
+                            }else
                             {
-                                <tr>
+                                    <tr>
                                     <td colspan="4">Không có bản ghi nào!</td>
-                                </tr>
+                                    </tr>
 
                             }
-
                         </tbody>
                     </table>
                     <!-- Thêm mã phân trang -->
@@ -149,6 +126,7 @@
 
 </section>
 
+
 @Html.AntiForgeryToken()
 @section script{
     <script>
@@ -160,7 +138,7 @@
                 var conf = confirm("Bạn có muốn xoá bản ghi này không?");
                 if (conf == true) {
                     $.ajax({
-                        url: "/Admin/News/Delete/",
+                        url: "/Admin/Product/Delete/",
                         type: "post",
                         beforeSend: function (xhr) {
                             xhr.setRequestHeader("XFRS-TOKEN", $('input:hidden[name="_RequestVerificationToken"]').val());
@@ -194,7 +172,7 @@
 
                 var token = $('input[name="__RequestVerificationToken"]').val();
                 $.ajax({
-                    url: "/Admin/News/IsActive/",
+                    url: "/Admin/Product/IsActive/",
                     type: "post",
                     beforeSend: function (xhr) {
                         xhr.setRequestHeader("XFRS-TOKEN", $('input:hidden[name="_RequestVerificationToken"]').val());
@@ -203,17 +181,14 @@
                         __RequestVerificationToken: token,
                         id: id
                     },
-
                     success: function (rs) {
                         //console.log(rs);
                         if (rs.success) {
                             if (rs.isActive == true) {
                                 btn.html("<i class='fa fa-check text-success'/>");
-                                //$("#btnActive").html("<i id='btnActive' class='fa fa-check text-success'></i>");
                             }
                             else if (rs.isActive == false) {
                                 btn.html("<i class='fas fa-times text-danger'> </i>");
-                                //$("#btnActive").html("<i id='btnActive' class='fa fa-check text-danger'></i>");
                             }
                         }
                     }
@@ -223,35 +198,20 @@
             $('body').on('change', '#SelectAll', function (e) {
                 e.preventDefault();
                 var checked = $('#SelectAll').is(':checked');
-                //console.log(checked);
-                //var checkStatus = this.Checked;
                 var checkbox = $(this).parents('.card-body').find('tr td input:checkbox');
 
                 checkbox.each(function () {
 
-                    //this.checked = checkStatus;
-
-                    //console.log(this.checked)
                     var ids = $(this).val();
 
-                    //console.log(ids);
-                    //if (this.checked) {
-                    //    console.log(ids);
-                    //}
                     if (!checked) {
-                        //console.log("unchecked");
-
                         $(".cbkItem").prop('checked', false);
 
-                        // check item is selected or not
-                        //
 
                     }
                     else {
-                        //console.log("checked");
-
                         $(".cbkItem").prop('checked', true);
-                        //console.log(ids);
+                  
                     }
                 });
 
@@ -260,26 +220,21 @@
             $('body').on('click', '#DeleteAll', function (e) {
                 e.preventDefault();
                 var checkbox = $(this).parents('.card').find('tr td input:checkbox');
-                //console.log("DeleteAll");
                 var strList = "";
                 checkbox.each(function () {
-                    //console.log(ids);
                     if (this.checked) {
                         var ids = $(this).val();
                         strList += ids + ",";
-                        //console.log(ids);
                     }
                 });
-                //console.log(strList);
-                //console.log(strList.slice(0, -1));
                 strList = strList.substring(0, strList.length - 1);
-                //console.log(strList);
+    
                 if (strList.length > 0) {
                     var conf = confirm('Bạn có muốn xóa các bản ghi này hay không?');
                     if (conf === true) {
                         var token = $('input[name="__RequestVerificationToken"]').val();
                         $.ajax({
-                            url: "/Admin/News/DeleteAll/",
+                            url: "/Admin/Product/DeleteAll/",
                             type: "post",
                             beforeSend: function (xhr) {
                                 xhr.setRequestHeader("XFRS-TOKEN", $('input:hidden[name="_RequestVerificationToken"]').val());
@@ -310,31 +265,6 @@
                     }
                 }
             });
-            //$(function () {
-            //    //If check_all checked then check all table rows
-            //    $("#check_all").on("click", function () {
-            //        if ($("input:checkbox").prop("checked")) {
-            //            $("input:checkbox[name='row-check']").prop("checked", true);
-            //        } else {
-            //            $("input:checkbox[name='row-check']").prop("checked", false);
-            //        }
-            //    });
-
-            //    // Check each table row checkbox
-            //    $("input:checkbox[name='row-check']").on("change", function () {
-            //        var total_check_boxes = $("input:checkbox[name='row-check']").length;
-            //        var total_checked_boxes = $("input:checkbox[name='row-check']:checked").length;
-
-            //        // If all checked manually then check check_all checkbox
-            //        if (total_check_boxes === total_checked_boxes) {
-            //            $("#check_all").prop("checked", true);
-            //        }
-            //        else {
-            //            $("#check_all").prop("checked", false);
-            //        }
-            //    });
-            //});
-
         });
 
     </script>

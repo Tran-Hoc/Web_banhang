@@ -123,7 +123,7 @@ namespace Web_banhang.Areas.Admin.Controllers
             return View(tbCategory);
         }
 
-        // GET: Admin/TbCategories/Delete/5
+        // GET: Admin/TbCategories/DeleteAsync/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.TbCategories == null)
@@ -141,8 +141,8 @@ namespace Web_banhang.Areas.Admin.Controllers
             return View(tbCategory);
         }
 
-        // POST: Admin/TbCategories/Delete/5
-        [HttpPost, ActionName("Delete")]
+        // POST: Admin/TbCategories/DeleteAsync/5
+        [HttpPost, ActionName("DeleteAsync")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {

@@ -1,9 +1,9 @@
-﻿@model Web_banhang.Models.NewsVM;
+﻿@model Web_banhang.Models.ProdCategoryVM
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 @{
-    ViewData["Title"] = "Chỉnh sửa";
-    ViewData["parent"] = "Tin tức";
+    ViewData["Title"] = "Thêm mới";
+    ViewData["parent"] = "Danh mục sản phẩm";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
     //ViewBag.menuChildName = "Thêm mới";
 }
@@ -15,6 +15,7 @@
     <li class="nav-item d-none d-sm-inline-block">
         <a href="#" class="nav-link">@ViewData["Title"]</a>
     </li>
+
 }
 @section pageHeader{
     <li class="breadcrumb-item active">@ViewData["parent"]</li>
@@ -28,7 +29,7 @@
                 <div class="card card-primary">
                     <form asp-action="Edit" method="post" enctype="multipart/form-data">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                       @Html.HiddenFor(x=> x.Id)
+                        <input type="hidden" asp-for="Id" />
                         <div class="card-body">
                             <div class="form-group">
                                 <label asp-for="Title" class="control-label"></label>
@@ -41,21 +42,16 @@
                                 <span asp-validation-for="Description" class="text-danger"></span>
                             </div>
                             <div class="form-group">
-                                <label asp-for="Image" class="control-label"></label>
+                                <label asp-for="Icon" class="control-label"></label>
                                 <div class="input-group">
                                     <div class="custom-file">
-                                        <input asp-for="Image" class="form-control" id="txtImage" style="cursor:pointer;" onclick="BrowseServer('txtImage');" >
+                                        <input asp-for="Icon" class="form-control" id="txtImage" style="cursor:pointer;" onclick="BrowseServer('txtImage');">
                                         <div class="input-group-append">
                                             <input type="button" value="Tải ảnh" class="form-control" onclick="BrowseServer('txtImage');" />
                                         </div>
                                     </div>
                                 </div>
-                                <span asp-validation-for="Image" class="text-danger"></span>
-                            </div>
-                            <div class="form-group">
-                                <label asp-for="Detail" class="control-label"></label>
-                                <textarea asp-for="Detail"></textarea>
-                                <span asp-validation-for="Detail" class="text-danger"></span>
+                                <span asp-validation-for="Icon" class="text-danger"></span>
                             </div>
                             <div class="form-group">
                                 <label asp-for="SeoTitle" class="control-label"></label>
@@ -73,13 +69,6 @@
                                 <span asp-validation-for="SeoKeywords" class="text-danger"></span>
                             </div>
                             <div class="form-group">
-                                <div class="custom-control custom-checkbox">
-                                    <input asp-for="IsActive" class="custom-control-input" type="checkbox">
-                                    <label asp-for="IsActive" class="custom-control-label"></label>
-                                    <span asp-validation-for="SeoKeywords" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="form-group">
                                 <input type="submit" value="Cập nhật" class="btn btn-primary" />
                             </div>
                         </div>
@@ -90,8 +79,10 @@
     </div>
 </section>
 
+
 @section script{
-     <!-- Summernote -->
+
+    <!-- Summernote -->
     <script src="~/client/plugins/summernote/summernote-bs4.min.js"></script>
     <script src="~/client/plugins/summernote/summernote-bs4.js"></script>
 
@@ -122,9 +113,9 @@
                 height: 450,
                 destroyOnClose: true,
                 getFileCallback: function (files) {
-                    console.log(files);
-                    console.log(files.url);
+
                     document.getElementById(field).value = files.name;
+
                 },
 
                 commandsOptions: {

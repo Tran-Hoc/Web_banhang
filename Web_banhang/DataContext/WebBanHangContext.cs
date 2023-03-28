@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Web_banhang.Data;
+using Web_banhang.Models;
 
 namespace Web_banhang.DataContext;
 
@@ -180,4 +181,8 @@ public partial class WebBanHangContext : DbContext
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+    public DbSet<Web_banhang.Models.ProdCategoryVM>? ProdCategoryVM { get; set; }
+
+    public DbSet<Web_banhang.Models.ProductVM>? ProductVM { get; set; }
 }

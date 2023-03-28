@@ -1,4 +1,4 @@
-﻿@model Web_banhang.Models.VMNews;
+﻿@model Web_banhang.Models.NewsVM;
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 @{
@@ -43,20 +43,22 @@
                             </div>
                             <div class="form-group">
                                 <label asp-for="Image" class="control-label"></label>
-                                <div class="custom-file">
-                                    <input asp-for="Image" class="form-control" id="txtImage">
-                                    <div class="input-group-append">
-                                        <input type="button" value="Tải ảnh" onclick="BrowseServer('txtImage');" />
-                                    </div>
+                                <div class="input-group">
+                                    <div class="custom-file">
+                                        <input asp-for="Image" class="form-control" id="txtImage" style="cursor:pointer;" onclick="BrowseServer('txtImage');" >
+                                        <div class="input-group-append">
+                                            <input type="button" value="Tải ảnh" class="form-control" onclick="BrowseServer('txtImage');" />
+                                        </div>
 
-                                    @*<label class="custom-file-label" for="customFile">Chọn hình</label>*@
+                                        @*<label class="custom-file-label" for="customFile">Chọn hình</label>*@
+                                    </div>
                                 </div>
                                 @*<input type="file" accept="image/*" class="form-control" asp-for="FileImage">*@
                                 <span asp-validation-for="Image" class="text-danger"></span>
                             </div>
                             <div class="form-group">
                                 <label asp-for="Detail" class="control-label"></label>
-                                <textarea asp-for="Detail" id="summernote"></textarea>
+                                <textarea asp-for="Detail"></textarea>
                                 <span asp-validation-for="Detail" class="text-danger"></span>
                             </div>
                             <div class="form-group">
@@ -75,7 +77,15 @@
                                 <span asp-validation-for="SeoKeywords" class="text-danger"></span>
                             </div>
                             <div class="form-group">
-                                <input type="submit" value="Create" class="btn btn-primary" />
+                                <div class="custom-control custom-checkbox">
+                                    <input asp-for="IsActive" class="custom-control-input" type="checkbox">
+                                    <label asp-for="IsActive" class="custom-control-label"></label>
+                                    <span asp-validation-for="SeoKeywords" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="submit" value="Tạo mới" class="btn btn-primary" />
                             </div>
                         </div>
                     </form>
@@ -104,12 +114,16 @@
     <script src="~/lib/jqueryui/jquery-ui.min.js"></script>
 
     <script src="~/lib/elfinder/js/elfinder.min.js"></script>
+
+    @await Html.PartialAsync("~/Areas/Admin/Views/Shared/_SummerNote.cshtml", new {height = 200, selector = "#Detail"})
+
     <script>
 
-        $(function () {
-            bsCustomFileInput.init();
-            $('#summernote').summernote()
-        })
+
+        //$(function () {
+        //    //bsCustomFileInput.init();
+        //    $('#summernote').summernote()
+        //});
 
         function BrowseServer(field) {
             var fm = $('<div/>').dialogelfinder({
@@ -120,10 +134,10 @@
                 height: 450,
                 destroyOnClose: true,
                 getFileCallback: function (files) {
-                    console.log(files);
+                    //console.log(files);
                     // debugger;
                     //console.log($('#editor').closest('.elfinder-input'));
-                    console.log(files.url);
+                    //console.log(files.url);
                     //editor.invoke('editor.insertImage', files.url);
                     document.getElementById(field).value = files.name;
                     //var content = '<div id="elfinder_content"><strong>' + files.name + '</strong></div>';

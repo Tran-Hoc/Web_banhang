@@ -4,7 +4,7 @@
     int height = Model.height ?? 200;
     string selector = Model.selector;
 }
-<link href="~/lib/elfinder/css/elfinder.full.css" rel="stylesheet" />
+@*<link href="~/lib/elfinder/css/elfinder.full.css" rel="stylesheet" />
 <link href="~/lib/elfinder/css/theme.min.css" rel="stylesheet" />
 
 <link href="~/lib/jqueryui/themes/base/jquery-ui.css" rel="stylesheet" />
@@ -20,7 +20,7 @@
 <script src="~/client/plugins/summernote/summernote-bs4.min.js"></script>
 <script src="~/client/plugins/summernote/summernote-bs4.js"></script>
 
-
+*@
 <script>
     (function (factory) {
         if (typeof define === 'function' && define.amd) {
@@ -35,18 +35,16 @@
         $.extend($.summernote.plugins, {
             // Tạo plugin tên elfinder
             'elfinder': function (context) {
-                
                 var self = this;
                 // ui has renders to build ui elements.
                 var ui = $.summernote.ui;
                 // Tạo nút bấm
                 context.memo('button.elfinder', function () {
                     var button = ui.button({
-                        contents: '<i class="note-icon-picture"/> elFinder',
+                        contents: '<i class="note-icon-picture"/> Chèn hình',
                         tooltip: 'Quản lý file',
                         click: function () {
                             // Bấm vào nút bấm gọi hàm elfinderDialog
-                            //debugger;
                             elfinderDialog(context);
                         }
                     });
@@ -64,9 +62,7 @@
 
         });
     }));
-    // open elfinder popup
     function elfinderDialog(editor) {
-       
         var fm = $('<div/>').dialogelfinder({
             url: '/el-finder-file-system/connector', // change with the url of your connector
             baseUrl: "/lib/elfinder/",
@@ -87,7 +83,9 @@
         }).dialogelfinder('instance');
     }
     $(document).ready(function () {
+        
         $('@selector').summernote({
+            
             height: @height,
             toolbar: [
                 // [groupName, [list of button]]

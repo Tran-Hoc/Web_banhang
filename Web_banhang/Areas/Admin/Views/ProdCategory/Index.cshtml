@@ -1,0 +1,152 @@
+﻿@model IEnumerable<Web_banhang.Models.ProdCategoryVM>
+
+
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Danh sách loại sản phẩm";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+}
+@section leftnavbar{
+    <li class="nav-item d-none d-sm-inline-block">
+        <a href="#" class="nav-link">@ViewData["Title"]</a>
+    </li>
+}
+@section pageHeader{
+    <li class="breadcrumb-item active">@ViewData["Title"]</li>
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">@ViewData["Title"]</h3> <div class="row">
+                    </div>
+                    <div class="float-right card-tools">
+                        <a asp-action="Create" class="btn btn-primary">Thêm mới</a>
+                        <a href="#" id="DeleteAll" class="btn btn-danger">Xoá</a>
+                    </div>
+                </div>
+                <div class="card-body table-responsive p-0">
+                   @* <div class="row">
+                        <div class="col-md-6">
+                        </div>
+                        <div class="col-md-5">
+                            <form asp-action="Index" asp-controller="News" method="post">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                <div class="input-group mb-3">
+                                    <p>
+                                        <div class="input-group-prepend">
+                                        </div>
+                                        <input name="searchstring" value="@ViewBag.searchstring" type="text" class="form-control">
+                                        <input type="submit" value="Tìm kiếm" class="btn btn-success" />
+                                    </p>
+                                </div>
+                            </form>
+                        </div>
+                    </div>*@
+                    <table class="table table-striped text-wrap">
+                        <thead>
+                            <tr>
+                                <th> <input type="checkbox" id="SelectAll" /></th>
+
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Title)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Description)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Icon)
+                                </th>
+
+                                <th class="container col-2">
+
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null && Model.Any())
+                            {
+                                @foreach (var item in Model)
+                                {
+
+                                    <tr id="row_@item.Id">
+                                        <td>
+                                            <input type="checkbox" class="cbkItem" value="@item.Id" />
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Title)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Description)
+                                        </td>
+                                        <td>
+                                            @*@Html.DisplayFor(modelItem => item.Icon)*@
+                                            <picture>
+                                                <img width="100" src='@Url.Content(item.Icon)' alt="Hình ảnh">
+                                            </picture>
+                                        </td>
+
+                                        <td>
+                                            <a class="btn btn-info" asp-action="Edit" asp-route-id="@item.Id">Sửa</a>
+                                            <a class="btn btn-danger btnDelete" data-id="@item.Id">Xoá</a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4">Không có bản ghi nào!</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+@Html.AntiForgeryToken()
+
+@section script{
+    <script>
+        $(document).ready(function () {
+            $('body').on('click', '.btnDelete', function () {
+
+                var id = $(this).data("id");
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                var conf = confirm("Bạn có muốn xoá bản ghi này không?");
+                if (conf == true) {
+                    $.ajax({
+                        url: "/Admin/ProdCategory/Delete/",
+                        type: "post",
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader("XFRS-TOKEN", $('input:hidden[name="_RequestVerificationToken"]').val());
+                        },
+                        data: {
+                            __RequestVerificationToken: token,
+                            id: id
+                        },
+                        success: function (rs) {
+                            if (rs.success) {
+                                $('#row_' + id).remove();
+                            }
+                            else {
+                                alert("Không thành công!");
+                            }
+                        },
+                        error: function (xhr) {
+                            alert(" err Không thành công!");
+                        }
+
+                    })
+                }
+            });
+        });
+
+    </script>
+ }

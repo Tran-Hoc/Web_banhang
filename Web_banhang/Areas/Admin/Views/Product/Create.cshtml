@@ -1,0 +1,310 @@
+﻿@model Web_banhang.Models.ProductVM
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+
+@{
+    ViewData["Title"] = "Thêm mới";
+    ViewData["parent"] = "Sản phầm";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@section leftnavbar{
+    <li class="nav-item d-none d-sm-inline-block">
+        <a href=".." class="nav-link"> @ViewData["parent"]</a>
+    </li>
+    <li class="nav-item d-none d-sm-inline-block">
+        <a href="#" class="nav-link">@ViewData["Title"]</a>
+    </li>
+
+}
+@section pageHeader{
+    <li class="breadcrumb-item active">@ViewData["parent"]</li>
+    <li class="breadcrumb-item active">@ViewData["Title"]</li>
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="col-12">
+            <div class="card">
+                <div class="card card-primary">
+                    <form asp-action="Create" method="post" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="card-body">
+
+                            <div class="form-group">
+                                <label asp-for="Title" class="control-label"></label>
+                                <input asp-for="Title" class="form-control" />
+                                <span asp-validation-for="Title" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="ProductCode" class="control-label"></label>
+                                <input asp-for="ProductCode" class="form-control" />
+                                <span asp-validation-for="ProductCode" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Description" class="control-label"></label>
+                                <input asp-for="Description" class="form-control" />
+                                <span asp-validation-for="Description" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Detail" class="control-label"></label>
+                                <input asp-for="Detail" class="form-control" />
+                                <span asp-validation-for="Detail" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                               <label asp-for="Image" class="control-label"></label>
+                                <div class="input-group">
+                                    <div class="custom-file">
+                                        <input asp-for="Image" class="form-control" id="txtImage" style="cursor:pointer;" onclick="BrowseServer('txtImage');" >
+                                        <div class="input-group-append">
+                                            <input type="button" value="Tải ảnh" class="form-control" onclick="BrowseServer('txtImage');" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <span asp-validation-for="Image" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <h4>Hình ảnh chi tiết</h4>
+                            </div>
+                            @*    <div class="form-group">
+                            <label asp-for="ListImage" class="control-label"></label>
+                            <input asp-for="ListImage" class="form-control" multiple />
+                            <input asp-for="ListImage" class="form-control" multiple />
+                            <span asp-validation-for="ListImage" class="text-danger"></span>
+
+                            </div>*@
+                            <div class="row">
+                                <div class="col-md-12 text-right">
+                                    <input type="button" class="btn btn-primary" onclick="BrowseSe('txtImage');" value="Tải ảnh" />
+                                </div>
+                                <div class="col-md-12">
+                                    <table class="table table-hover" id="tbAnhSanPham">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center">#</th>
+                                                <th class="text-center">Ảnh</th>
+                                                <th class="text-center">Ảnh đại diện</th>
+                                                <th class="text-center">Thao tác</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tbHtml">
+                                        </tbody>
+                                    </table>
+                                    <input type="hidden" id="tCurrentId" value="0" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        <label asp-for="Price" class="control-label"></label>
+                                        <input asp-for="Price" class="form-control" />
+                                        <span asp-validation-for="Price" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        <label asp-for="PriceSale" class="control-label"></label>
+                                        <input asp-for="PriceSale" class="form-control" />
+                                        <span asp-validation-for="PriceSale" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        <label asp-for="Quantity" class="control-label"></label>
+                                        <input asp-for="Quantity" class="form-control" />
+                                        <span asp-validation-for="Quantity" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="form-group form-check ">
+                                        <label class="form-check">
+                                            <input class="form-check-input" asp-for="IsActive" /> @Html.DisplayNameFor(model => model.IsActive)
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group form-check">
+                                        <label class="form-check">
+                                            <input class="form-check-input" asp-for="IsSale" /> @Html.DisplayNameFor(model => model.IsSale)
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group form-check">
+                                        <label class="form-check">
+                                            <input class="form-check-input" asp-for="IsFeature" /> @Html.DisplayNameFor(model => model.IsFeature)
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group form-check">
+                                        <label class="form-check">
+                                            <input class="form-check-input" asp-for="IsHot" /> @Html.DisplayNameFor(model => model.IsHot)
+                                        </label>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="form-group">
+                                <h4>SEO</h4>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="SeoTitle" class="control-label"></label>
+                                <input asp-for="SeoTitle" class="form-control" />
+                                <span asp-validation-for="SeoTitle" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="SeoDescription" class="control-label"></label>
+                                <input asp-for="SeoDescription" class="form-control" />
+                                <span asp-validation-for="SeoDescription" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="SeoKeywords" class="control-label"></label>
+                                <input asp-for="SeoKeywords" class="form-control" />
+                                <span asp-validation-for="SeoKeywords" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <input type="submit" value="Tạo mới" class="btn btn-primary" />
+                            </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section script{
+
+    <!-- Summernote -->
+    <script src="~/client/plugins/summernote/summernote-bs4.min.js"></script>
+    <script src="~/client/plugins/summernote/summernote-bs4.js"></script>
+
+    <!-- elfinder -->
+    <link href="~/lib/elfinder/css/elfinder.full.css" rel="stylesheet" />
+    <link href="~/lib/elfinder/css/theme.min.css" rel="stylesheet" />
+
+    <link href="~/lib/jqueryui/themes/base/jquery-ui.css" rel="stylesheet" />
+    <link href="~/lib/jqueryui/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/lib/jqueryui/themes/base/theme.css" rel="stylesheet" />
+    <link href="~/lib/jqueryui/themes/base/theme.min.css" rel="stylesheet" />
+
+    <script src="~/lib/jqueryui/jquery-ui.js"></script>
+    <script src="~/lib/jqueryui/jquery-ui.min.js"></script>
+
+    <script src="~/lib/elfinder/js/elfinder.min.js"></script>
+
+    @await Html.PartialAsync("~/Areas/Admin/Views/Shared/_SummerNote.cshtml", new {height = 200, selector = "#Detail"})
+
+    <script>
+        $(document).ready(function () {
+            $('body').on('click', '.btnDeleteImage', function () {
+                var conf = confirm('Bạn có muốn xóa ảnh này không?');
+                if (conf === true) {
+                    var _id = $(this).data('id');
+                    $('#trow_' + _id).fadeTo('fast', 0.5, function () {
+                        $(this).slideUp('fast', function () { $(this).remove(); });
+                    });
+                    var temp = $('#tCurrentId').val();
+                    var currentId = parseInt(temp) - 1;
+                    $('#tCurrentId').val(currentId);
+                }
+            });
+        });
+        function BrowseServer(field) {
+            var fm = $('<div/>').dialogelfinder({
+                url: '/el-finder-file-system/connector', // change with the url of your connector
+                baseUrl: "/lib/elfinder/",
+                lang: 'vi',
+                width: 840,
+                height: 450,
+                destroyOnClose: true,
+                getFileCallback: function (files) {
+                
+                    document.getElementById(field).value = files.name;
+              
+                },
+
+                commandsOptions: {
+                    getfile: {
+                        oncomplete: 'close',
+                        folders: false
+                    }
+                }
+            }).dialogelfinder('instance');
+        }
+        function BrowseSe(field) {
+            //var urlImage;
+            var fm = $('<div/>').dialogelfinder({
+                url: '/el-finder-file-system/connector', // change with the url of your connector
+                baseUrl: "/lib/elfinder/",
+                lang: 'vi',
+                width: 840,
+                height: 450,
+                destroyOnClose: true,
+                getFileCallback: function (files) {
+                    console.log(files.name);
+                    addImageProduct(files.name);
+                    //urlImage = files.name;
+                },
+
+                commandsOptions: {
+                    getfile: {
+                        oncomplete: 'close',
+                        folders: false
+                    }
+                }
+            }).dialogelfinder('instance');
+        };
+
+        function addImageProduct(url) {
+            var temp = $('#tCurrentId').val();
+            var currentId = parseInt(temp) + 1;
+            var str = "";
+            if (currentId == 1) {
+                str += `<tr id="trow_${currentId}">
+                                <td class="text-center">${currentId}</td>
+                                                <td class="text-center"><img width="80" src="/files/Image/${url}" /> <input type='hidden' value="${url}" name="Images"/></td>
+                                <td class="text-center"><input type="radio" name="rDefault" value="${currentId}" checked="checked"/></td>
+                                <td class="text-center"><a href="#" data-id="${currentId}" class="btn btn-sm btn-danger btnXoaAnh">Xóa</a></td>
+                                </tr>`;
+            }
+            else {
+                str += `<tr id="trow_${currentId}">
+                                <td class="text-center">${currentId}</td>
+                                        <td class="text-center"><img width="80" src="/files/Image/${url}"  /> <input type='hidden' value="${url}" name="Images"/></td>
+                                <td class="text-center"><input type="radio" name="rDefault" value="${currentId}"/></td>
+                                <td class="text-center"><a href="#" data-id="${currentId}" class="btn btn-sm btn-danger btnXoaAnh">Xóa</a></td>
+                                </tr>`;
+            }
+            $('#tbHtml').append(str);
+            $('#tCurrentId').val(currentId);
+        };
+        function BrowseServer(field) {
+            var fm = $('<div/>').dialogelfinder({
+                url: '/el-finder-file-system/connector', // change with the url of your connector
+                baseUrl: "/lib/elfinder/",
+                lang: 'vi',
+                width: 840,
+                height: 450,
+                destroyOnClose: true,
+                getFileCallback: function (files) {
+                    document.getElementById(field).value = files.name;
+                },
+                commandsOptions: {
+                    getfile: {
+                        oncomplete: 'close',
+                        folders: false
+                    }
+                }
+            }).dialogelfinder('instance');
+        }
+    </script>
+}

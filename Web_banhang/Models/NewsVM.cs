@@ -6,7 +6,7 @@ using Web_banhang.Data;
 
 namespace Web_banhang.Models
 {
-    public class VMNews
+    public class NewsVM
     {
 
         [Key]

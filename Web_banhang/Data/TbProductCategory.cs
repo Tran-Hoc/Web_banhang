@@ -40,7 +40,7 @@ public partial class TbProductCategory
     public string? Modifiedby { get; set; }
 
     [StringLength(150)]
-    public string Alias { get; set; } = null!;
+    public string? Alias { get; set; }
 
     [InverseProperty("ProductCategory")]
     public virtual ICollection<TbProduct> TbProducts { get; } = new List<TbProduct>();
