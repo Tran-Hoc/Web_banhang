@@ -55,6 +55,7 @@
 
                                 <th>Tên sản phẩm</th>
                                 <th>Hình ảnh</th>
+                                <th>Số lượng</th>
                                 <th>Giá</th>
                                 <th>Số lượng</th>
                                 <th>Home</th>
@@ -110,9 +111,9 @@
                             }
                             else
                             {
-                                <tr>
+                                    <tr>
                                     <td colspan="4">Không có bản ghi nào!</td>
-                                </tr>
+                                    </tr>
 
                             }
                         </tbody>
@@ -147,6 +148,7 @@
     <script>
         $(document).ready(function () {
             $('body').on('click', '.btnDelete', function () {
+
                 var id = $(this).data("id");
                 var token = $('input[name="__RequestVerificationToken"]').val();
                 var conf = confirm("Bạn có muốn xoá bản ghi này không?");
@@ -181,6 +183,7 @@
 
                 e.preventDefault();
                 var btn = $(this);
+                var id = btn.data("id");
                 var id = $(this).data("id");
 
                 var token = $('input[name="__RequestVerificationToken"]').val();
@@ -282,9 +285,12 @@
 
                     if (!checked) {
                         $(".cbkItem").prop('checked', false);
+
+
                     }
                     else {
                         $(".cbkItem").prop('checked', true);
+                  
                     }
                 });
 
@@ -301,7 +307,7 @@
                     }
                 });
                 strList = strList.substring(0, strList.length - 1);
-
+    
                 if (strList.length > 0) {
                     var conf = confirm('Bạn có muốn xóa các bản ghi này hay không?');
                     if (conf === true) {

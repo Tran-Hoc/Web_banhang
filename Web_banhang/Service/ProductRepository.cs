@@ -116,6 +116,11 @@ namespace Web_banhang.Service
             throw new NotImplementedException();
         }
 
+        public int IsActive(int id)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<bool> UpdateAsync(ProductVM t)
         {
             if (_context.TbProducts != null)
@@ -190,7 +195,7 @@ namespace Web_banhang.Service
                 _context.Entry(item).State = EntityState.Modified;
                 _context.SaveChanges();
                 return item.IsActive ? 1 : 2; // true 1 : false 2
-            }
+        }
             return 0;
         }
 

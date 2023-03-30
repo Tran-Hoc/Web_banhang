@@ -65,7 +65,7 @@
                                 <span asp-validation-for="Detail" class="text-danger"></span>
                             </div>
                             <div class="form-group">
-                                <label asp-for="Image" class="control-label"></label>
+                               <label asp-for="Image" class="control-label"></label>
                                 <div class="input-group">
                                     <div class="custom-file">
                                         <input asp-for="Image" class="form-control" id="txtImage" style="cursor:pointer;" onclick="BrowseServer('txtImage');">
@@ -96,6 +96,7 @@
                                             <tr>
                                                 <th class="text-center">#</th>
                                                 <th class="text-center">Ảnh</th>
+                                                <th class="text-center">Ảnh đại diện</th>
                                                 <th class="text-center">Thao tác</th>
                                             </tr>
                                         </thead>
@@ -234,9 +235,9 @@
                 height: 450,
                 destroyOnClose: true,
                 getFileCallback: function (files) {
-
+                
                     document.getElementById(field).value = files.name;
-
+              
                 },
 
                 commandsOptions: {
@@ -277,17 +278,17 @@
             var str = "";
             if (currentId == 1) {
                 str += `<tr id="trow_${currentId}">
-                                                <td class="text-center">${currentId}</td>
+                                <td class="text-center">${currentId}</td>
                                                 <td class="text-center"><img width="80" src="/files/Image/${url}" /> <input type='hidden' value="${url}" name="LstImage" /></td>
-                                                <td class="text-center"><a href="#" data-id="${currentId}" class="btn btn-sm btn-danger btnXoaAnh">Xóa</a></td>
-                                                </tr>`;
+                                <td class="text-center"><a href="#" data-id="${currentId}" class="btn btn-sm btn-danger btnXoaAnh">Xóa</a></td>
+                                </tr>`;
             }
             else {
                 str += `<tr id="trow_${currentId}">
-                                                <td class="text-center">${currentId}</td>
+                                <td class="text-center">${currentId}</td>
                                                 <td class="text-center"><img width="80" src="/files/Image/${url}"  /> <input type='hidden' value="${url}" name="LstImage" /></td>
-                                                <td class="text-center"><a href="#" data-id="${currentId}" class="btn btn-sm btn-danger btnXoaAnh">Xóa</a></td>
-                                                </tr>`;
+                                <td class="text-center"><a href="#" data-id="${currentId}" class="btn btn-sm btn-danger btnXoaAnh">Xóa</a></td>
+                                </tr>`;
             }
             $('#tbHtml').append(str);
             $('#tCurrentId').val(currentId);
